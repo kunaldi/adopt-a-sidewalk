@@ -1,83 +1,28 @@
 #sidebar
   = image_tag "logos/asw_logo.png", :alt => t("titles.main", :thing => t("defaults.thing").titleize), :title => t("titles.main", :thing => t("defaults.thing").titleize)
-  
-  - if user_signed_in?
-    #user_badge.font_1.link_1.center
-      Welcome
-      = current_user.fullname
-      [
-      = link_to t("links.sign_out"), destroy_user_session_path, :id => 'sign_out_link_main', :class => 'font_12'
-      ]
-      
+  =# render :partial => 'register'
   = render :partial => 'address_form'
+  
+  -# unless user_signed_in?
+    #sidebar_login.radius_5
+      =# render :partial => 'sessions/sign_in'
 
-  #info_box
-    - flash.each do |key, message|
-      %div{:id => key}
-        = message
+  #mini_profile.radius_5
+    = render :partial => 'user_badge'
+    = render :partial => 'sidewalk_list'
 
-  .font_1
-    %p
-      Welcome to Chicago Shovel's Adopt-a-Sidewalk!
-    %p
-      You may know that you're required to shovel the sidewalk in front of your home or business,
-      but how about helping others out?
-    %p
-      Claim the sidewalks that you'll shovel this winter.
-      Share supplies like snowblowers, shovels and salt with your neighbors.
-      Ask for help if you need an extra hand this winter.
-      Let everyone know you've cleared your sidewalk.
-    %p
-      Don't see your sidewalk on this map?
-      Help add your sidewalk by letting us know here.
-    
-    %p
-      Sidewalk colors
-    %p
-      .needs_help= 'Needs help'
-      .cleared= 'Cleared'
-      .adopted= 'Adopted'
-      .unclear= 'Uncleared'
-    
-  = image_tag "logos/ChicagoShovelsHOME.jpg"
-  = image_tag "logos/SignUpSMSAlerts.jpg"
-  = image_tag "logos/SignUpSMSAlerts.jpg"
-  = image_tag "logos/SignUpSMSAlerts.jpg"
-    
-  #register
-    %p#register-text
-      
-    #register-dialog{:class => "dialog"}
-      = form_for :user, :html => {:id => "register_form"} do |f|
-        = label_tag "first_name", "First name"
-        = text_field_tag "first_name", params[:first_name]
-        = label_tag "last_name", "Last name"
-        = text_field_tag "last_name", params[:last_name]
-        = label_tag "email", "Email address"
-        = text_field_tag "email", params[:email]
-        = label_tag "password", "Password"
-        = text_field_tag "password", params[:password]
-        = submit_tag t("buttons.register")
-      #register-fb
-        %fb:login-button{:length => "long", :perms => "email", :onlogin => ""}
-    #login-dialog{:class => "dialog"}
-      = form_for :user, :html => {:id => "login_form"} do |f|
-        = label_tag "email", "Email address"
-        = text_field_tag "email", params[:email]
-        = label_tag "password", "Password"
-        = text_field_tag "password", params[:password]
-        = submit_tag t("buttons.sign_in")
-      #login-fb
-        %fb:login-button{:length => "long", :perms => "email", :onlogin => ""}
-  %ul.horizontal_items
+  %ul.social_items.clearfix
     = render :partial => 'gplus_button'
     = render :partial => 'facebook_button'
     = render :partial => 'twitter_button'
+
+  #service_logos.center
+    = link_to image_tag("logos/ChicagoShovelsHOME.jpg"), 'http://www.chicagoshovels.org', :title => 'Chicago Shovels Home'
     
-  #xosw_widget{:style => "position: absolute; left: 20px; bottom: 0px; z-index: 9999"}
-  
-  #feedback
-    = link_to t("links.terms"), '/tos'
+  #feedback.font_12.link_1
+    = link_to t("links.terms"), tos_path, :target => '_blank'
+
+#osw_widget{:style => "position: fixed; left: 345px; bottom: 0px; z-index: 90000000"}
 
 #map_canvas
 

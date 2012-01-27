@@ -1,19 +1,28 @@
 #actions_box
+  #legend.gray_box.radius_5.font_14.center
+    %h3
+      Sidewalk colors
+    %ul.horizontal_items.font_bold
+      %li.needs_help= 'Needs help'
+      %li.cleared= 'Shoveled'
+      %li.adopted= 'Adopted'
+      %li.unclear= 'Not adopted'
+      %li.unclear.link_1= link_to 'Refresh', '#', :id => 'refresh_link'
+
   %h2.address
     = @sidewalk.address
   
   %h1.actions_label
     - if @shoveled_by_me
       .cleared= 'You have shoveled this sidewalk'
+    - elsif @my_sidewalk
+      .adopted= 'You have adopted this sidewalk'
     - elsif @sidewalk.cleared
       .cleared= 'This sidewalk is cleared'
     - elsif @sidewalk.need_help
       .needs_help= 'This sidewalk needs help'
     - else
-      - if @my_sidewalk
-        .adopted= 'You have adopted this sidewalk'
-      - else
-        Can you shovel this sidewalk?
+      Can you shovel this sidewalk?
   
   - if user_signed_in?
     %ul.actions_menu
@@ -50,13 +59,20 @@
             .btn_image
             .label I need help to keep this sidewalk clean.
       %li.need_supplies
-        %a{:href => "#", :id => "share_link"}
-          %h1 Share
-          .btn_image
-          .label I need supplies or can share.
-  
+        - if browser.ie7?
+          %a{:href => "http://www.ohsowe.com", :target => "_blank"}
+            %h1 Share
+            .btn_image
+            .label I need supplies or can share.
+        - else
+          %a{:href => "#", :id => "share_link"}
+            %h1 Share
+            .btn_image
+            .label I need supplies or can share.
+
+
   - else
-    #need_register.link_1
+    #need_register.radius_5.link_1
       Please
       = link_to t("links.login"), '#', :id => 'sign_in_link'
       or

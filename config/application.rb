@@ -1,6 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'net/http'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -9,7 +10,7 @@ if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
 end
 
-module AdoptAThing
+module AdoptASidewalk
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -44,5 +45,7 @@ module AdoptAThing
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    config.action_view.field_error_proc = Proc.new { |html_tag, instance| "#{html_tag}".html_safe }
   end
 end

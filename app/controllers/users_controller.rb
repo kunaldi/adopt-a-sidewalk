@@ -1,13 +1,12 @@
 class UsersController < Devise::RegistrationsController
-  #respond_to :html, :json
-  #before_filter :authenticate_user!
+  layout 'info_window'
 
   def new
-    @user = User.new
+    respond_with (@user = User.new)
   end
 
   def edit
-    render :edit, :layout => "info_window"
+    render :edit
   end
 
   def update
@@ -23,13 +22,36 @@ class UsersController < Devise::RegistrationsController
 
   def create
     build_resource
-    if resource.save
-      sign_in resource
-      puts "created: #{resource.class} #{resource.inspect}"
-      render :inline => "You have been registered!"
+    if verify_recaptcha
+      if resource.save
+        sign_in resource
+        session[:omniauth] = nil unless @user.new_record?
+        render :inline => "You have been registered!" and return
+      else
+        errors = resource.errors
+      end
     else
-      clean_up_passwords(resource)
-      render(:json => {"errors" => resource.errors}, :status => 500)
+      errors = "Invalid verification code."
     end
+
+    #set_flash_message :notice, :inactive_signed_up, :reason => errors if is_navigational_format?
+    flash.now[:error] = errors
+    flash.delete(:recaptcha_error)
+    
+    clean_up_passwords(resource)
+    render(:json => {"errors" => errors,
+                    :html => render_to_string(:template => 'users/new.html.haml')},
+                    :status => 500)
   end
+  
+  private
+  
+  def build_resource(*args)
+    super
+    if session[:omniauth]
+      @user.apply_omniauth(session[:omniauth])
+      @user.valid?
+    end
+  end  
+  
 end

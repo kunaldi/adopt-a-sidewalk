@@ -12,6 +12,11 @@ gem 'rack-contrib'
 gem 'execjs'
 gem 'therubyracer'
 gem 'jquery-rails'
+gem 'recaptcha', :require => 'recaptcha/rails'
+gem 'kaminari'
+gem 'omniauth-facebook'
+gem 'rest-client'
+gem 'browser'
 
 platforms :jruby do
   gem 'jruby-openssl'
@@ -30,8 +35,13 @@ group :production do
   gem 'passenger'
 end
 
+group :development do
+  gem 'nifty-generators'
+end
+
 group :test do
   gem 'simplecov'
 #  gem 'sqlite3'
   gem 'webmock'
+  gem "mocha"
 end

@@ -9,15 +9,35 @@ class SidewalkClaimsController < ApplicationController
       render :json => {:errors => 'Sidewalk not found'}, :status => 500 and return
     end
     
+    if (current_user.claims_count && current_user.claims_count >= (current_user.max_claims || 100))
+      err_msg = 'You have adopted a lot of sidewalks! If you would like to adopt more sidewalks, please send your request to ChicagoShovels@cityofchicago.org'
+      
+      #K: sent an email to chicagoshovels@cityofchicago.org to report this 100 max attempt
+      
+      render :json => {:errors => err_msg}, :status => 500 and return
+    end
+    
     if (@claim = SidewalkClaim.find_or_initialize_by_gid_and_user_id(@sidewalk.gid, current_user.id)).new_record?
       if @sidewalk.lat.nil?
-        loc = Address.geocode("#{@sidewalk.address}, Chicago, IL")
-        @sidewalk.lat = loc[0]
-        @sidewalk.lon = loc[1]
-        @sidewalk.save
+        gc = Address.geocode("#{@sidewalk.address}, Chicago, IL")
+        if gc && gc.success
+          @sidewalk.lat = gc.lat
+          @sidewalk.lon = gc.lng
+          @sidewalk.save
+        end
       end
-      render :json => {"errors" => @claim.errors}, :status => 500 and return unless @claim.save
+      render :json => {:errors => @claim.errors}, :status => 500 and return unless @claim.save
     end
+    
+    #if params.fetch(:fb_publish, nil)
+    #  message = <<-MSG
+    #      I've adopted a sidewalk to keep clear of snow this winter!
+    #      Join www.ChicagoShovels.org to lend a hand, track snow plows,
+    #      connect with neighbors and adopt-a-sidewalk in your community      
+    #  MSG
+    #  
+    #  publish_facebook_status(message)
+    #end
     
     redirect_to :action => :show, :id => @sidewalk.gid
   end
